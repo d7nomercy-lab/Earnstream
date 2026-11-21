@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Streamza — Watch & Earn Dashboard</title>
+  <style>
+    :root {
+      --bg-main: #090b14;
+      --bg-card: #121526;
+      --bg-card-elevated: #181c33;
+      --accent-purple: #6c47ff;
+      --accent-purple-hover: #5835e5;
+      --accent-glow: rgba(108, 71, 255, 0.35);
+      --text-primary: #ffffff;
+      --text-secondary: #9499b7;
+      --text-muted: #5e6380;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding-bottom: 84px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px 18px;
+    }
+
+    /* Top Header */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6c47ff, #4c28d9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      cursor: pointer;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .balance-pill {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+    }
+
+    .avatar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Search Bar Overlay */
+    .search-box {
+      display: none;
+      margin-bottom: 18px;
+    }
+    .search-box.active {
+      display: block;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--accent-purple);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    /* Greeting Section */
+    .greeting-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .greeting-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .greeting-name {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .greeting-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .share-fab {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2d8cff, #1a66db);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 12px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--accent-purple);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px var(--accent-glow);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-purple-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Featured Watch Next Card */
+    .featured-card {
+      position: relative;
+      margin-top: 22px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(18, 21, 38, 0.45) 0%, rgba(12, 14, 26, 0.96) 100%),
+                  url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=900&q=80') center/cover no-repeat;
+      border: 1px solid var(--border-subtle);
+      padding: 86px 20px 22px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .badge-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #b4a3ff;
+      margin-bottom: 8px;
+    }
+
+    .featured-title {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .featured-meta {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+    }
+
+    /* Available Balance Card */
+    .balance-card {
+      margin-top: 18px;
+      background: linear-gradient(135deg, #14192d 0%, #101d2c 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .balance-card-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .balance-card-amount {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .help-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Views Management */
+    .view-section {
+      display: none;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    /* Watch Section */
+    .section-heading {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .player-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+      max-height: 240px;
+    }
+
+    .player-controls-info {
+      padding: 16px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6c47ff, #10b981);
+      transition: width 0.25s linear;
+    }
+
+    .reward-status {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .video-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .video-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .video-item.active-video {
+      border-color: var(--accent-purple);
+      background: var(--bg-card-elevated);
+    }
+
+    .video-item h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .video-item p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .earn-badge {
+      background: rgba(108, 71, 255, 0.18);
+      color: #b4a3ff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .earn-badge.completed {
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--success);
+    }
+
+    /* Wallet & Referrals */
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-group input, .input-group select {
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .tx-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 13px;
+    }
+    .tx-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 16, 30, 0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 14px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #9e85ff;
+    }
+
+    .nav-icon-wrap {
+      padding: 6px 16px;
+      border-radius: 999px;
+    }
+
+    .nav-item.active .nav-icon-wrap {
+      background: rgba(108, 71, 255, 0.2);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e233d;
+      border: 1px solid var(--accent-purple);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast"></div>
+
+  <div class="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="brand-icon" onclick="switchTab('dashboard')" title="Streamza Home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" onclick="toggleSearch()" aria-label="Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <div class="balance-pill" id="headerBalance" onclick="switchTab('wallet')">USD 0.00</div>
+        <button class="avatar-btn" onclick="editUsername()" id="avatarInitials" title="Change Name">RA</button>
+      </div>
+    </header>
+
+    <!-- Search Input -->
+    <div class="search-box" id="searchBox">
+      <input type="text" id="searchInput" placeholder="Search trailers & paid videos..." oninput="filterVideos()" />
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <main id="view-dashboard" class="view-section active">
+      <div class="greeting-row">
+        <div>
+          <div class="greeting-label" id="greetingTime">GOOD AFTERNOON</div>
+          <h1 class="greeting-name" id="displayName">Raymond</h1>
+          <p class="greeting-sub">Here's your watch and earn overview.</p>
+        </div>
+        <button class="share-fab" onclick="copyReferral()" title="Share Invite Link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+
+      <button class="btn-primary" onclick="startFeaturedVideo()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Watch paid videos
+      </button>
+
+      <!-- Featured Card -->
+      <section class="featured-card">
+        <div class="badge-tag">WATCH NEXT</div>
+        <h2 class="featured-title" id="featuredTitle">GHOST SOLDIER - New Trailer Starring Jim Caviezel (4K)</h2>
+        <div class="featured-meta" id="featuredMeta">Trailers • 00:15 • USD 1.00/video</div>
+        <button class="btn-primary" onclick="startFeaturedVideo()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Start watching
+        </button>
+      </section>
+
+      <!-- Available Balance Card -->
+      <section class="balance-card">
+        <div>
+          <div class="balance-card-label">Available balance</div>
+          <div class="balance-card-amount" id="cardBalance">USD 0.00</div>
+        </div>
+        <button class="help-circle" onclick="showToast('Watch full videos without switching tabs to earn USD.')">?</button>
+      </section>
+    </main>
+
+    <!-- WATCH VIEW -->
+    <section id="view-watch" class="view-section">
+      <h2 class="section-heading">Watch & Earn Player</h2>
+      <div class="player-wrapper">
+        <video id="videoPlayer" controls playsinline>
+          <source id="videoSource" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4" />
+          Your browser does not support HTML5 video.
+        </video>
+        <div class="player-controls-info">
+          <strong id="nowPlayingTitle">GHOST SOLDIER - New Trailer (4K)</strong>
+          <div class="progress-track">
+            <div class="progress-fill" id="watchProgress"></div>
+          </div>
+          <div class="reward-status">
+            <span id="watchTimerText">Watch 15s to claim reward</span>
+            <span id="watchRewardAmount">+USD 1.00</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-heading">Available Paid Videos</h3>
+      <div class="video-list" id="videoListContainer"></div>
+    </section>
+
+    <!-- WALLET VIEW -->
+    <section id="view-wallet" class="view-section">
+      <div class="balance-card" style="margin-top: 0; margin-bottom: 18px;">
+        <div>
+          <div class="balance-card-label">Withdrawable Balance</div>
+          <div class="balance-card-amount" id="walletBalance">USD 0.00</div>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3 class="section-heading" style="margin-bottom: 4px;">Request Payout</h3>
+        <p style="font-size: 12px; color: var(--text-secondary);">Minimum withdrawal threshold: USD 5.00</p>
+        <div class="input-group">
+          <select id="payoutMethod">
+            <option value="EcoCash / Mobile Money">EcoCash / Mobile Money</option>
+            <option value="PayPal">PayPal</option>
+            <option value="USDT (TRC20)">USDT (TRC20)</option>
+          </select>
+          <input type="text" id="payoutAccount" placeholder="Enter phone number, email, or wallet address" />
+          <button class="btn-primary" style="justify-content: center;" onclick="requestWithdrawal()">Withdraw Funds</button>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3 class="section-heading">Earnings History</h3>
+        <div id="txHistoryList">
+          <p style="font-size: 13px; color: var(--text-secondary);">No transactions yet. Watch a video to start earning.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERRALS VIEW -->
+    <section id="view-referrals" class="view-section">
+      <div class="card-box">
+        <h3 class="section-heading">Invite Friends & Earn</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+          Share your referral link. Earn <strong>USD 0.50</strong> bonus for every friend who signs up and completes their first video.
+        </p>
+        <div class="input-group">
+          <input type="text" id="refLinkInput" readonly value="https://streamza.app/?ref=RAYMOND2026" />
+          <button class="btn-primary" style="justify-content: center;" onclick="copyReferral()">Copy Referral Link</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+      <div class="nav-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span>Dashboard</span>
+    </button>
+
+    <button class="nav-item" id="nav-watch" onclick="switchTab('watch')">
+      <div class="nav-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
+      <span>Watch</span>
+    </button>
+
+    <button class="nav-item" id="nav-wallet" onclick="switchTab('wallet')">
+      <div class="nav-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+      </div>
+      <span>Wallet</span>
+    </button>
+
+    <button class="nav-item" id="nav-referrals" onclick="switchTab('referrals')">
+      <div class="nav-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span>Referrals</span>
+    </button>
+  </nav>
+
+  <script>
+    // Video Catalog
+    const VIDEOS = [
+      {
+        id: 'vid_1',
+        title: 'GHOST SOLDIER - New Trailer Starring Jim Caviezel (4K)',
+        category: 'Trailers',
+        requiredSeconds: 15,
+        reward: 1.00,
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+      },
+      {
+        id: 'vid_2',
+        title: 'CYBER HORIZON - Official Sci-Fi Teaser (HD)',
+        category: 'Trailers',
+        requiredSeconds: 15,
+        reward: 0.75,
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+      },
+      {
+        id: 'vid_3',
+        title: 'SPEED RUNNERS - Action Featurette',
+        category: 'Action',
+        requiredSeconds: 15,
+        reward: 0.50,
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
+      }
+    ];
+
+    // App State
+    let state = JSON.parse(localStorage.getItem('streamza_state')) || {
+      username: 'Raymond',
+      balance: 0.00,
+      completedIds: [],
+      transactions: []
+    };
+
+    let currentVideo = VIDEOS[0];
+    let watchedSeconds = 0;
+    let watchInterval = null;
+
+    function saveState() {
+      localStorage.setItem('streamza_state', JSON.stringify(state));
+      renderUI();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + tabName).classList.add('active');
+      document.getElementById('nav-' + tabName).classList.add('active');
+
+      if (tabName !== 'watch') {
+        const player = document.getElementById('videoPlayer');
+        player.pause();
+      }
+    }
+
+    function toggleSearch() {
+      const box = document.getElementById('searchBox');
+      box.classList.toggle('active');
+      if (box.classList.contains('active')) {
+        switchTab('watch');
+        document.getElementById('searchInput').focus();
+      }
+    }
+
+    function editUsername() {
+      const newName = prompt('Enter your display name:', state.username);
+      if (newName && newName.trim()) {
+        state.username = newName.trim();
+        saveState();
+      }
+    }
+
+    function startFeaturedVideo() {
+      switchTab('watch');
+      selectVideo(VIDEOS[0].id);
+      document.getElementById('videoPlayer').play().catch(() => {});
+    }
+
+    function selectVideo(videoId) {
+      const vid = VIDEOS.find(v => v.id === videoId);
+      if (!vid) return;
+
+      currentVideo = vid;
+      watchedSeconds = 0;
+
+      const player = document.getElementById('videoPlayer');
+      const source = document.getElementById('videoSource');
+      source.src = vid.url;
+      player.load();
+
+      document.getElementById('nowPlayingTitle').textContent = vid.title;
+      document.getElementById('watchRewardAmount').textContent = `+USD ${vid.reward.toFixed(2)}`;
+      document.getElementById('watchProgress').style.width = '0%';
+
+      if (state.completedIds.includes(vid.id)) {
+        document.getElementById('watchTimerText').textContent = 'Reward already claimed';
+      } else {
+        document.getElementById('watchTimerText').textContent = `Watch ${vid.requiredSeconds}s to claim reward`;
+      }
+
+      renderVideoList();
+    }
+
+    // Track active video playback
+    const videoPlayer = document.getElementById('videoPlayer');
+    videoPlayer.addEventListener('play', () => {
+      clearInterval(watchInterval);
+      watchInterval = setInterval(() => {
+        if (videoPlayer.paused || videoPlayer.ended || document.hidden) return;
+        if (state.completedIds.includes(currentVideo.id)) return;
+
+        watchedSeconds++;
+        const pct = Math.min(100, (watchedSeconds / currentVideo.requiredSeconds) * 100);
+        document.getElementById('watchProgress').style.width = pct + '%';
+        document.getElementById('watchTimerText').textContent =
+          `Watching: ${watchedSeconds}s / ${currentVideo.requiredSeconds}s`;
+
+        if (watchedSeconds >= currentVideo.requiredSeconds) {
+          clearInterval(watchInterval);
+          creditReward(currentVideo);
+        }
+      }, 1000);
+    });
+
+    videoPlayer.addEventListener('pause', () => clearInterval(watchInterval));
+    videoPlayer.addEventListener('ended', () => clearInterval(watchInterval));
+
+    function creditReward(vid) {
+      if (state.completedIds.includes(vid.id)) return;
+      state.completedIds.push(vid.id);
+      state.balance = Number((state.balance + vid.reward).toFixed(2));
+      state.transactions.unshift({
+        label: `Watched: ${vid.title.slice(0, 26)}...`,
+        amount: `+USD ${vid.reward.toFixed(2)}`,
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      document.getElementById('watchTimerText').textContent = 'Reward claimed!';
+      showToast(`Earned +USD ${vid.reward.toFixed(2)}!`);
+      saveState();
+    }
+
+    function filterVideos() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      renderVideoList(query);
+    }
+
+    function renderVideoList(filter = '') {
+      const container = document.getElementById('videoListContainer');
+      container.innerHTML = '';
+
+      VIDEOS.filter(v => v.title.toLowerCase().includes(filter)).forEach(vid => {
+        const done = state.completedIds.includes(vid.id);
+        const isCurrent = currentVideo.id === vid.id;
+        const div = document.createElement('div');
+        div.className = `video-item ${isCurrent ? 'active-video' : ''}`;
+        div.onclick = () => {
+          selectVideo(vid.id);
+          videoPlayer.play().catch(() => {});
+        };
+        div.innerHTML = `
+          <div style="padding-right: 10px;">
+            <h4>${vid.title}</h4>
+            <p>${vid.category} • ${vid.requiredSeconds}s required</p>
+          </div>
+          <span class="earn-badge ${done ? 'completed' : ''}">
+            ${done ? 'Claimed' : '+USD ' + vid.reward.toFixed(2)}
+          </span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function requestWithdrawal() {
+      const account = document.getElementById('payoutAccount').value.trim();
+      const method = document.getElementById('payoutMethod').value;
+
+      if (state.balance < 5.00) {
+        showToast('Minimum withdrawal is USD 5.00');
+        return;
+      }
+      if (!account) {
+        showToast('Enter payout account details');
+        return;
+      }
+
+      const withdrawn = state.balance;
+      state.balance = 0;
+      state.transactions.unshift({
+        label: `Withdrawal (${method})`,
+        amount: `-USD ${withdrawn.toFixed(2)}`,
+        date: new Date().toLocaleDateString()
+      });
+      document.getElementById('payoutAccount').value = '';
+      showToast('Withdrawal request submitted');
+      saveState();
+    }
+
+    function copyReferral() {
+      const link = document.getElementById('refLinkInput').value;
+      navigator.clipboard?.writeText(link);
+      showToast('Referral link copied!');
+    }
+
+    function renderUI() {
+      const formattedBal = `USD ${state.balance.toFixed(2)}`;
+      document.getElementById('headerBalance').textContent = formattedBal;
+      document.getElementById('cardBalance').textContent = formattedBal;
+      document.getElementById('walletBalance').textContent = formattedBal;
+
+      document.getElementById('displayName').textContent = state.username;
+      document.getElementById('avatarInitials').textContent = state.username.slice(0, 2).toUpperCase();
+      document.getElementById('refLinkInput').value =
+        `https://streamza.app/?ref=${state.username.toUpperCase().replace(/\s+/g, '')}2026`;
+
+      const hour = new Date().getHours();
+      const greet = hour < 12 ? 'GOOD MORNING' : hour < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
+      document.getElementById('greetingTime').textContent = greet;
+
+      const txContainer = document.getElementById('txHistoryList');
+      if (state.transactions.length > 0) {
+        txContainer.innerHTML = state.transactions.map(tx => `
+          <div class="tx-row">
+            <span>${tx.label} <small style="color:var(--text-muted)">(${tx.date})</small></span>
+            <strong style="color:${tx.amount.startsWith('+') ? 'var(--success)' : '#fff'}">${tx.amount}</strong>
+          </div>
+        `).join('');
+      }
+
+      renderVideoList();
+    }
+
+    // Initialize
+    renderUI();
+  </script>
+</body>
+</html>
